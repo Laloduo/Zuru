@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 
-const API_URL = "http://localhost:8000/classify";
+const API_URL = "https://zuru.onrender.com/classify";
 
 export default function App() {
   const [input, setInput] = useState("");
