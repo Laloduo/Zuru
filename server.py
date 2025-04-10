@@ -9,7 +9,7 @@ import json
 # Configurar FastAPI
 app = FastAPI()
 
-# Configurar CORS para permitir conexiones desde cualquier origen
+# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -18,13 +18,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Cargar la API Key desde una variable de entorno
+# API Key desde entorno
 openai_api_key = os.getenv("OPENAI_API_KEY")
 if not openai_api_key:
     raise ValueError("La clave de OpenAI no está definida en las variables de entorno.")
 client = openai.OpenAI(api_key=openai_api_key)
 
-# Definir las categorías disponibles
+# Categorías disponibles (igual que en tu código actual)
 CATEGORIES = [
     "Abarrotes en general (exc. vinos y licores) embarques extranjeros",
     "Abarrotes en general (exc. vinos y licores) embarques locales",
@@ -204,31 +204,31 @@ CATEGORIES = [
     "Vinos y licores embotellados. Embarques locales",
     "Vinos y licores en pipa o carro tanque",
     "Yeso en sacos",
-]
+]  # ← Aquí pegas tus categorías completas (por tamaño no las copio todas aquí)
 
 # Modelo de datos
-    class ClassificationRequest(BaseModel):
+class ClassificationRequest(BaseModel):
     descripcion: str
 
 # Archivo de memoria
-    MEMORIA_PATH = "memoria.json"
+MEMORIA_PATH = "memoria.json"
 
-    def cargar_memoria():
+def cargar_memoria():
     if not os.path.exists(MEMORIA_PATH):
         return {}
     with open(MEMORIA_PATH, "r", encoding="utf-8") as f:
         return json.load(f)
 
-    def guardar_memoria(memoria):
+def guardar_memoria(memoria):
     with open(MEMORIA_PATH, "w", encoding="utf-8") as f:
         json.dump(memoria, f, indent=2, ensure_ascii=False)
 
-    @app.get("/")
-    def home():
+@app.get("/")
+def home():
     return {"mensaje": "¡Clasificación con GPT-4 funcionando con memoria!"}
 
-    @app.post("/classify")
-    async def classify(request: ClassificationRequest):
+@app.post("/classify")
+async def classify(request: ClassificationRequest):
     descripcion = request.descripcion.strip().lower()
     memoria = cargar_memoria()
 
@@ -256,6 +256,7 @@ CATEGORIES = [
 
     No agregues explicaciones ni texto adicional.
     """
+
     try:
         response = client.chat.completions.create(
             model="gpt-4",
