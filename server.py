@@ -225,7 +225,7 @@ def guardar_memoria(memoria):
 
 @app.get("/")
 def home():
-    return {"mensaje": "¡Clasificación con GPT-4 funcionando con memoria!"}
+    return {"mensaje": "¡Clasificación con GPT-3.5-turbo funcionando con memoria!"}
 
 @app.post("/classify")
 async def classify(request: ClassificationRequest):
@@ -259,7 +259,7 @@ async def classify(request: ClassificationRequest):
 
     try:
         response = client.chat.completions.create(
-            model="gpt-4",
+            model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": prompt}]
         )
         categoria_predicha = response.choices[0].message.content.strip()
