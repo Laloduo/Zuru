@@ -1,4 +1,6 @@
-".env.txt" 
-".env.txt" 
+__pycache__/
+.env
+memoria.json
+*.pyc
 ".env" 
-".env.txt" 
+".env" 
