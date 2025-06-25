@@ -460,20 +460,21 @@ async def classify(request: ClassificationRequest):
     prompt = f"""
 Eres un asistente de inteligencia artificial experto en clasificación de mercancías para seguros y logística.
 
-Tu tarea es analizar la siguiente descripción de producto y clasificarla en **UNA SOLA** de las siguientes categorías:
+Tu función es clasificar mercancías en **UNA SOLA** de las siguientes categorías:
 {', '.join(categorias)}
 
 📌 Instrucciones clave:
 1. Si la descripción contiene una palabra o frase que coincida total o parcialmente con una categoría, selecciona esa categoría obligatoriamente.
-2. La comparación debe ser robusta: detecta coincidencias aún si hay errores menores de escritura o diferencias de idioma (español, inglés o alemán).
-3. Si ninguna categoría encaja razonablemente, responde exactamente: **Sin clasificar**.
-4. Nunca respondas con explicaciones, sinónimos ni sugerencias.
-5. Responde **solo** con el nombre exacto de la categoría (copiado literalmente) o con **"Sin clasificar"**.
+2. Si no hay coincidencia directa, elige la categoría que más se aproxime en función del **uso, naturaleza o función del producto**.
+3. La comparación debe ser robusta: detecta coincidencias aún si hay errores menores de escritura o diferencias de idioma (español, inglés o alemán).
+4. Solo si **ninguna categoría es razonablemente aplicable**, responde exactamente: **Sin clasificar**.
+5. Nunca respondas con explicaciones, sinónimos ni sugerencias.
+6. Responde **solo** con el nombre exacto de la categoría (copiado literalmente) o con **"Sin clasificar"**.
 
 Ejemplos:
 - Si la descripción es "yeso", responde: **Yeso en sacos**
 - Si la descripción es "corcho", responde: **Corcho en trozos**
-- Si es "undefined data" o no corresponde a ningún producto, responde: **Sin clasificar**
+- "producto inexistente zzz123" → **Sin clasificar**
 
 📦 Descripción del producto:
 \"\"\"{request.descripcion}\"\"\"
@@ -481,12 +482,10 @@ Ejemplos:
 
     try:
         response = client.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-4-turbo",
             messages=[{"role": "user", "content": prompt}]
         )
         categoria = response.choices[0].message.content.strip()
-        if categoria not in categorias and categoria != "Sin clasificar":
-            categoria = "Sin clasificar"
         memoria[clave_memoria] = categoria
         guardar_memoria(memoria)
         return {"categoria": categoria}
